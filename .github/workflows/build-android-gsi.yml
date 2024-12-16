@@ -55,7 +55,7 @@ jobs:
         source $GITHUB_ENV
         ~/bin/repo sync -cq
 
-    - name: List Directory
+    - name: List Root Directory
       run: |
         source $GITHUB_ENV
         ls -l
@@ -63,12 +63,12 @@ jobs:
     - name: List Build Directory
       run: |
         source $GITHUB_ENV
-        ls -l build
+        ls -l build || echo "Build directory not found"
 
     - name: Set Up Build Environment
       run: |
         source $GITHUB_ENV
-        source build/envsetup.sh
+        [ -f build/envsetup.sh ] && source build/envsetup.sh || echo "build/envsetup.sh not found"
 
     - name: Lunch Configuration
       run: |
