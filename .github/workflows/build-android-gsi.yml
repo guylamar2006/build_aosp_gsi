@@ -58,14 +58,20 @@ jobs:
     - name: List Root Directory After Sync
       run: |
         source $GITHUB_ENV
-        echo "Root Directory:"
+        echo "Root Directory After Sync:"
         ls -l
 
-    - name: List Build Directory After Sync
+    - name: List All Directories After Sync
       run: |
         source $GITHUB_ENV
-        echo "Build Directory:"
-        ls -l build || echo "Build directory not found"
+        echo "All Directories After Sync:"
+        find . -type d
+
+    - name: Search for envsetup.sh
+      run: |
+        source $GITHUB_ENV
+        echo "Searching for envsetup.sh:"
+        find . -type f -name envsetup.sh
 
     - name: Verify Build Directory
       run: |
@@ -76,11 +82,6 @@ jobs:
           echo "build/envsetup.sh not found"
           exit 1
         fi
-
-    - name: Debug Directory Structure
-      run: |
-        source $GITHUB_ENV
-        find . -type f -name envsetup.sh
 
     - name: Set Up Build Environment
       run: |
