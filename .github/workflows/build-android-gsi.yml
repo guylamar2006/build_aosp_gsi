@@ -29,6 +29,13 @@ jobs:
         yes | sdkmanager --licenses
         sdkmanager "platform-tools" "platforms;android-30"
 
+    - name: Install Repo Tool
+      run: |
+        mkdir -p ~/bin
+        curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+        chmod a+x ~/bin/repo
+        export PATH=$PATH:~/bin
+
     - name: Initialize Repo
       run: |
         repo init -u https://android.googlesource.com/platform/manifest -b android-15-qpr2-beta-1-gpl
