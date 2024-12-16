@@ -55,15 +55,17 @@ jobs:
         source $GITHUB_ENV
         ~/bin/repo sync -cq
 
-    - name: List Root Directory
+    - name: List Root Directory After Sync
       run: |
         source $GITHUB_ENV
+        echo "Root Directory:"
         ls -l
 
-    - name: List Build Directory
+    - name: List Build Directory After Sync
       run: |
         source $GITHUB_ENV
-        ls -l build || echo "Build directory not found"
+        echo "Build Directory:"
+        ls -l build
 
     - name: Verify Build Directory
       run: |
