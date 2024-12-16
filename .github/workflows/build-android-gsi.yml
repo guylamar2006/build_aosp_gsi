@@ -34,39 +34,39 @@ jobs:
         mkdir -p ~/bin
         curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
         chmod a+x ~/bin/repo
-        echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+        echo 'export PATH=$PATH:$HOME/bin' >> $GITHUB_ENV
 
-    - name: Source .bashrc
-      run: source ~/.bashrc
+    - name: Source Environment
+      run: source $GITHUB_ENV
 
     - name: Verify Repo Installation
       run: |
         echo "Repo version:"
-        ~/bin/repo --version
+        repo --version
 
     - name: Initialize Repo
       run: |
-        source ~/.bashrc
+        source $GITHUB_ENV
         repo init -u https://android.googlesource.com/platform/manifest -b android-15-qpr2-beta-1-gpl
 
     - name: Sync Repo
       run: |
-        source ~/.bashrc
+        source $GITHUB_ENV
         repo sync -cq
 
     - name: Set Up Build Environment
       run: |
-        source ~/.bashrc
+        source $GITHUB_ENV
         source build/envsetup.sh
 
     - name: Lunch Configuration
       run: |
-        source ~/.bashrc
+        source $GITHUB_ENV
         lunch gsi_arm64-userdebug
 
     - name: Build GSI
       run: |
-        source ~/.bashrc
+        source $GITHUB_ENV
         make -j4
 
     - name: Upload Artifacts
