@@ -55,6 +55,16 @@ jobs:
         source $GITHUB_ENV
         ~/bin/repo sync -cq
 
+    - name: List Directory
+      run: |
+        source $GITHUB_ENV
+        ls -l
+
+    - name: List Build Directory
+      run: |
+        source $GITHUB_ENV
+        ls -l build
+
     - name: Set Up Build Environment
       run: |
         source $GITHUB_ENV
