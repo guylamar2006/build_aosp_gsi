@@ -34,7 +34,8 @@ jobs:
         mkdir -p ~/bin
         curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
         chmod a+x ~/bin/repo
-        export PATH=$PATH:~/bin
+        echo "export PATH=\$PATH:~/bin" >> ~/.bashrc
+        source ~/.bashrc
 
     - name: Initialize Repo
       run: |
