@@ -41,18 +41,19 @@ jobs:
 
     - name: Verify Repo Installation
       run: |
+        source $GITHUB_ENV
         echo "Repo version:"
-        repo --version
+        ~/bin/repo --version
 
     - name: Initialize Repo
       run: |
         source $GITHUB_ENV
-        repo init -u https://android.googlesource.com/platform/manifest -b android-15-qpr2-beta-1-gpl
+        ~/bin/repo init -u https://android.googlesource.com/platform/manifest -b android-15-qpr2-beta-1-gpl
 
     - name: Sync Repo
       run: |
         source $GITHUB_ENV
-        repo sync -cq
+        ~/bin/repo sync -cq
 
     - name: Set Up Build Environment
       run: |
