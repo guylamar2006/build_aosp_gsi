@@ -1,0 +1,52 @@
+name: Build Android GSI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '21'
+
+    - name: Set up Android SDK
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y openjdk-21-jdk
+        wget https://dl.google.com/android/repository/commandlinetools-linux-6858069_latest.zip -O cmdline-tools.zip
+        unzip cmdline-tools.zip
+        mkdir -p $HOME/Android/Sdk/cmdline-tools
+        mv cmdline-tools $HOME/Android/Sdk/cmdline-tools/latest
+        export ANDROID_HOME=$HOME/Android/Sdk
+        export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin
+        yes | sdkmanager --licenses
+        sdkmanager "platform-tools" "platforms;android-30"
+
+    - name: Initialize Repo
+      run: |
+        repo init -u https://android.googlesource.com/platform/manifest -b android-15-qpr2-beta-1-gpl
+
+    - name: Sync Repo
+      run: repo sync -cq
+
+    - name: Set Up Build Environment
+      run: source build/envsetup.sh
+
+    - name: Lunch Configuration
+      run: lunch gsi_arm64-userdebug
+
+    - name: Build GSI
+      run: make -j4
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: gsi-build
+        path: out/target/product/gsi_arm64/
