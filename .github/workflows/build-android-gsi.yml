@@ -61,17 +61,22 @@ jobs:
         echo "Root Directory After Sync:"
         ls -l
 
-    - name: List All Directories After Sync
-      run: |
-        source $GITHUB_ENV
-        echo "All Directories After Sync:"
-        find . -type d
-
     - name: Search for envsetup.sh
       run: |
         source $GITHUB_ENV
         echo "Searching for envsetup.sh:"
         find . -type f -name envsetup.sh
+
+    - name: Add envsetup.sh to Environment
+      run: |
+        source $GITHUB_ENV
+        if [ -f build/envsetup.sh ]; then
+          echo "build/envsetup.sh found"
+          echo "build/envsetup.sh" >> $GITHUB_ENV
+        else
+          echo "build/envsetup.sh not found"
+          exit 1
+        fi
 
     - name: Verify Build Directory
       run: |
