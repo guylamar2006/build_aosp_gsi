@@ -24,8 +24,8 @@ jobs:
         unzip cmdline-tools.zip
         mkdir -p $HOME/Android/Sdk/cmdline-tools
         mv cmdline-tools $HOME/Android/Sdk/cmdline-tools/latest
-        export ANDROID_HOME=$HOME/Android/Sdk
-        export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin
+        echo 'export ANDROID_HOME=$HOME/Android/Sdk' >> $GITHUB_ENV
+        echo 'export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin' >> $GITHUB_ENV
         yes | sdkmanager --licenses
         sdkmanager "platform-tools" "platforms;android-30"
 
@@ -34,25 +34,37 @@ jobs:
         mkdir -p ~/bin
         curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
         chmod a+x ~/bin/repo
-        echo 'export PATH=\$PATH:$HOME/bin' >> $GITHUB_ENV
+        echo 'export PATH=$PATH:$HOME/bin' >> $GITHUB_ENV
+
+    - name: Verify Repo Installation
+      run: |
+        echo "Repo version:"
+        ~/bin/repo --version
 
     - name: Initialize Repo
-      env:
-        PATH: ${{ env.PATH }}
       run: |
+        source $GITHUB_ENV
         repo init -u https://android.googlesource.com/platform/manifest -b android-15-qpr2-beta-1-gpl
 
     - name: Sync Repo
-      run: repo sync -cq
+      run: |
+        source $GITHUB_ENV
+        repo sync -cq
 
     - name: Set Up Build Environment
-      run: source build/envsetup.sh
+      run: |
+        source $GITHUB_ENV
+        source build/envsetup.sh
 
     - name: Lunch Configuration
-      run: lunch gsi_arm64-userdebug
+      run: |
+        source $GITHUB_ENV
+        lunch gsi_arm64-userdebug
 
     - name: Build GSI
-      run: make -j4
+      run: |
+        source $GITHUB_ENV
+        make -j4
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
