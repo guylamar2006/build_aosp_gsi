@@ -65,10 +65,25 @@ jobs:
         source $GITHUB_ENV
         ls -l build || echo "Build directory not found"
 
+    - name: Verify Build Directory
+      run: |
+        source $GITHUB_ENV
+        if [ -f build/envsetup.sh ]; then
+          echo "build/envsetup.sh found"
+        else
+          echo "build/envsetup.sh not found"
+          exit 1
+        fi
+
     - name: Set Up Build Environment
       run: |
         source $GITHUB_ENV
-        [ -f build/envsetup.sh ] && source build/envsetup.sh || echo "build/envsetup.sh not found"
+        source build/envsetup.sh
+
+    - name: Verify Lunch Command
+      run: |
+        source $GITHUB_ENV
+        command -v lunch || echo "lunch command not found"
 
     - name: Lunch Configuration
       run: |
