@@ -24,4 +24,84 @@ jobs:
         mkdir -p $HOME/Android/Sdk/cmdline-tools
         unzip cmdline-tools.zip -d $HOME/Android/Sdk/cmdline-tools
         echo "export ANDROID_HOME=$HOME/Android/Sdk" >> $GITHUB_ENV
-        echo "export PATH=\$PATH:\$ANDROID_HOME/cmdline-tools/cmdline-tools/bin:\$ANDROID_HOME/platform
+        echo "export PATH=\$PATH:\$ANDROID_HOME/cmdline-tools/cmdline-tools/bin:\$ANDROID_HOME/platform-tools" >> $GITHUB_ENV
+        source $GITHUB_ENV
+        yes | $ANDROID_HOME/cmdline-tools/cmdline-tools/bin/sdkmanager --licenses
+        $ANDROID_HOME/cmdline-tools/cmdline-tools/bin/sdkmanager "platform-tools" "platforms;android-30"
+
+    - name: Install Repo Tool
+      run: |
+        mkdir -p ~/bin
+        curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+        chmod a+x ~/bin/repo
+        echo 'export PATH=$PATH:$HOME/bin' >> $GITHUB_ENV
+
+    - name: Source Environment
+      run: source $GITHUB_ENV
+
+    - name: Verify Repo Installation
+      run: |
+        source $GITHUB_ENV
+        echo "Repo version:"
+        ~/bin/repo --version
+
+    - name: Initialize Repo
+      run: |
+        source $GITHUB_ENV
+        ~/bin/repo init -u https://android.googlesource.com/platform/manifest -b android-15-qpr2-beta-1-gpl
+
+    - name: Sync Repo
+      run: |
+        source $GITHUB_ENV
+        ~/bin/repo sync -cq
+
+    - name: List Root Directory
+      run: |
+        source $GITHUB_ENV
+        ls -l
+
+    - name: List Build Directory
+      run: |
+        source $GITHUB_ENV
+        ls -l build || echo "Build directory not found"
+
+    - name: Verify Build Directory
+      run: |
+        source $GITHUB_ENV
+        if [ -f build/envsetup.sh ]; then
+          echo "build/envsetup.sh found"
+        else
+          echo "build/envsetup.sh not found"
+          exit 1
+        fi
+
+    - name: Debug Directory Structure
+      run: |
+        source $GITHUB_ENV
+        find . -type f -name envsetup.sh
+
+    - name: Set Up Build Environment
+      run: |
+        source $GITHUB_ENV
+        source build/envsetup.sh
+
+    - name: Verify Lunch Command
+      run: |
+        source $GITHUB_ENV
+        command -v lunch || echo "lunch command not found"
+
+    - name: Lunch Configuration
+      run: |
+        source $GITHUB_ENV
+        lunch gsi_arm64-userdebug
+
+    - name: Build GSI
+      run: |
+        source $GITHUB_ENV
+        make -j4
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: gsi-build
+        path: out/target/product/gsi_arm64/
